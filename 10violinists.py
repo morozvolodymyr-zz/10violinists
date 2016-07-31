@@ -62,7 +62,7 @@ class Violinist(threading.Thread):
 
 def main():
     que_violin = queue.Queue(maxsize=5)
-    que_bow = queue.Queue()
+    que_bow = queue.Queue(maxsize=5)
     mutex_violin = threading.Condition()
     mutex_bow = threading.Condition()
     v1 = Violinist(que_violin, que_bow, mutex_violin, mutex_bow, 'v1')
