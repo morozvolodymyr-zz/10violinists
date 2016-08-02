@@ -12,24 +12,14 @@ class Violinist(threading.Thread):
         self.mutex_bow = mutex_bow
         self.name = name
 
-        if self.queue_violin.full():
-            pass
-        else:
-            self.queue_violin.put('violin')
-
-        if self.queue_bow.full():
-            pass
-        else:
-            self.queue_bow.put('bow')
-
     def run(self):
         while True:
             self.mutex_violin.acquire()
             while self.queue_violin.qsize() == 0:
                 self.mutex_violin.wait()
+
             print('The violinist ' + self.name + ' take a violin.')
             self.queue_violin.get()
-            self.mutex_violin.notifyAll()
             self.mutex_violin.release()
 
             self.mutex_bow.acquire()
@@ -37,23 +27,18 @@ class Violinist(threading.Thread):
                 self.mutex_bow.wait()
             print('The violinist ' + self.name + ' take a bow.')
             self.queue_bow.get()
-            self.mutex_bow.notifyAll()
             self.mutex_bow.release()
 
             print('The violinist ' + self.name + ' playing...')
             time.sleep(2)
 
             self.mutex_violin.acquire()
-            while self.queue_violin.qsize() >= 5:
-                self.mutex_violin.wait()
             print('The violinist ' + self.name + ' put a violin')
             self.queue_violin.put('violin')
             self.mutex_violin.notifyAll()
             self.mutex_violin.release()
 
             self.mutex_bow.acquire()
-            while self.queue_bow.qsize() >= 5:
-                self.mutex_bow.wait()
             print('The violinist ' + self.name + ' put a bow')
             self.queue_bow.put('bow')
             self.mutex_bow.notifyAll()
@@ -62,7 +47,17 @@ class Violinist(threading.Thread):
 
 def main():
     que_violin = queue.Queue(maxsize=5)
+    que_violin.put('violin')
+    que_violin.put('violin')
+    que_violin.put('violin')
+    que_violin.put('violin')
+    que_violin.put('violin')
     que_bow = queue.Queue(maxsize=5)
+    que_bow.put('bow')
+    que_bow.put('bow')
+    que_bow.put('bow')
+    que_bow.put('bow')
+    que_bow.put('bow')
     mutex_violin = threading.Condition()
     mutex_bow = threading.Condition()
     v1 = Violinist(que_violin, que_bow, mutex_violin, mutex_bow, 'v1')
